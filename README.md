@@ -33,11 +33,6 @@ The repository is organized into a clean folder hierarchy to meet submission req
 * **database.sql**: MySQL database schema export.
 
 
-## 📸 Screenshots
-Visual proof of functionality is located in the `/screenshots` folder:
-1. **InfinityFree File Manager:** Verification of successful deployment.
-2. **Database Tables:** Overview of the MySQL schema in phpMyAdmin.
-3. **CRUD Functionality:** Proof of adding, editing, and deleting items on the live site.
 
 ## 📥 Cloning the Repository
 To set up a local copy of this project, run the following command in your terminal:
