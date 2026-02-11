@@ -20,18 +20,7 @@ This system implements full **CRUD (Create, Read, Update, Delete)** functionalit
 * **Backend:** PHP.
 * **Database:** MySQL.
 * **Hosting:** InfinityFree.
-
-
-## 📂 Project Structure
-The repository is organized into a clean folder hierarchy to meet submission requirements:
-
-* **css/**: Stylesheets for the user interface.
-* **js/**: Client-side scripts.
-* **includes/**: Logic and database connection settings (`db.php`).
-* **uploads/**: Directory for item images.
-* **screenshots/**: Required submission proof (File Manager, phpMyAdmin, CRUD).
-* **database.sql**: MySQL database schema export.
-
+---
 
 
 ## 📥 Cloning the Repository
