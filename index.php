@@ -1,10 +1,11 @@
 <?php
 include "db.php";   // db.php already starts session
 
-if (!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit;
-}
+/* =========================
+   Check login
+========================= */
+$loggedIn = isset($_SESSION['user']);
+$userRole = $loggedIn ? $_SESSION['user']['role'] : null;
 
 /* =========================
    Auto-cleanup: delete items older than 1 month
@@ -71,62 +72,40 @@ $totalPages = max(1, ceil($totalItems / $itemsPerPage));
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Lost & Found</title>
-<link rel="stylesheet" href="css/main.css">
+<title>WhereClause</title>
+<link rel="stylesheet" href="css/style.css">
 <style>
-    /* Common button style */
-    .btn {
-        display: inline-block;
-        padding: 8px 15px;
-        text-decoration: none;
-        color: #fff;
-        background-color: #007bff;
-        border-radius: 5px;
-        margin: 2px;
-        font-size: 14px;
-        transition: 0.3s;
-    }
-    .btn:hover {
-        opacity: 0.8;
-    }
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 2px;
+    font-size: 14px;
+    transition: 0.3s;
+    font-weight: bold;
+    cursor: pointer;
+}
 
-    /* Edit button - yellow */
-    .btn.edit {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    /* Claim button - red */
-    .btn.claim {
-        background-color: #dc3545;
-        color: #fff;
-    }
-
-    /* Logout button - gray */
-    .btn.logout {
-        background-color: #6c757d;
-    }
-
-    /* Table image zoom */
-    .table-img {
-        max-width: 80px;
-        cursor: pointer;
-    }
-
-    .img-modal {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    }
-
-    .img-zoomed {
-        max-width: 90%;
-        max-height: 90%;
-    }
+/* Edit button - yellow */
+.btn.edit { background-color: #ffc107; color: #000; }
+/* Claim button - red */
+.btn.claim { background-color: #dc3545; color: #fff; }
+/* Logout button - dark gray */
+.btn.logout { background-color: #333; color: #fff; }
+/* Table image zoom */
+.table-img { max-width: 80px; cursor: pointer; }
+.img-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.img-zoomed { max-width: 90%; max-height: 90%; }
 </style>
 </head>
 <body>
@@ -152,9 +131,15 @@ $totalPages = max(1, ceil($totalItems / $itemsPerPage));
         <?php if($_SESSION['user']['role'] == 'admin'): ?>
             <a href="pending_items.php" class="btn">Pending Items</a>
         <?php endif; ?>
+
         <a href="add.php" class="btn">Add Item</a>
-        <a href="logout.php" class="btn logout">Logout</a>
+
+        <!-- Refresh Button -->
+        <a href="index.php" class="btn" style="background-color:#17a2b8; color:#fff;">Refresh</a>
+
+        <a href="logout.php" class="btn logout" style="background-color:#333; color:#fff;">Logout</a>
     </div>
+
 
 </div>
 
@@ -165,7 +150,7 @@ $totalPages = max(1, ceil($totalItems / $itemsPerPage));
 <th>Description</th>
 <th>Image</th>
 <th>Expires On</th>
-<?php if($_SESSION['user']['role']=='admin'): ?>
+<?php if($loggedIn && $userRole=='admin'): ?>
     <th>Actions</th>
 <?php endif; ?>
 </tr>
@@ -184,13 +169,8 @@ $totalPages = max(1, ceil($totalItems / $itemsPerPage));
                 <span class="no-img">No Image</span>
             <?php endif; ?>
         </td>
-        <td>
-            <?php
-            $removalDate = date("Y-m-d", strtotime($row['created_at'] . " +1 month"));
-            echo $removalDate;
-            ?>
-        </td>
-        <?php if($_SESSION['user']['role']=='admin'): ?>
+        <td><?= date("Y-m-d", strtotime($row['created_at'] . " +1 month")) ?></td>
+        <?php if($loggedIn && $userRole=='admin'): ?>
         <td>
             <a href="edit_item.php?id=<?= $row['id'] ?>" class="btn edit">Edit</a>
             <a href="claim_item.php?id=<?= $row['id'] ?>" class="btn claim">Claim</a>
@@ -200,13 +180,12 @@ $totalPages = max(1, ceil($totalItems / $itemsPerPage));
     <?php endwhile; ?>
 <?php else: ?>
 <tr>
-<td colspan="<?= $_SESSION['user']['role']=='admin' ? 5 : 4 ?>" class="empty">No items found.</td>
+<td colspan="<?= ($loggedIn && $userRole=='admin') ? 5 : 4 ?>" class="empty">No items found.</td>
 </tr>
 <?php endif; ?>
 
 </tbody>
 </table>
-
 
 <div class="pagination">
     <?php if($page > 1): ?>
